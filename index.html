@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1a0b3d">
+  <title>Mini-jeux Live</title>
+  <meta name="description" content="Mini-jeux pour les lives TikTok : le chat répond en écrivant 1, 2, 3 ou 4.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ACCUEIL -->
+    <section id="screen-home" class="screen active">
+      <header class="home-head">
+        <h1>🎮 Mini-jeux Live</h1>
+        <p>Le chat joue en écrivant <b>1</b>, <b>2</b>, <b>3</b> ou <b>4</b>.</p>
+      </header>
+
+      <div id="game-list" class="game-list"></div>
+
+      <details id="chat-panel" class="panel">
+        <summary><span class="dot" data-status="off"></span> <span id="chat-summary">Connexion au chat TikTok</span></summary>
+        <label>Ton pseudo TikTok
+          <input id="tiktok-user" type="text" placeholder="@tonpseudo" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </label>
+        <label>Clé API Euler Stream
+          <input id="euler-key" type="password" placeholder="Colle ta clé ici" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="hint">La clé reste dans ce téléphone et n’est jamais envoyée ailleurs qu’à Euler Stream. Tu dois être <b>en live</b> pour que la connexion marche.</p>
+        <div class="row">
+          <button id="btn-connect" class="btn primary">Se connecter</button>
+          <button id="btn-disconnect" class="btn ghost">Déconnecter</button>
+        </div>
+        <p id="chat-status" class="status">Chat non connecté</p>
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+      </details>
+    </section>
+
+    <!-- RÉGLAGES DU JEU -->
+    <section id="screen-setup" class="screen">
+      <button class="btn ghost back" data-go="home">← Jeux</button>
+      <h2 id="setup-title"></h2>
+      <p id="setup-desc" class="muted"></p>
+      <form id="setup-form" class="panel open">
+        <div id="setup-options"></div>
+        <div class="grid2">
+          <label>Questions
+            <select id="opt-count">
+              <option value="5">5</option><option value="10" selected>10</option>
+              <option value="15">15</option><option value="20">20</option>
+            </select>
+          </label>
+          <label>Temps par question
+            <select id="opt-time">
+              <option value="10">10 s</option><option value="15">15 s</option>
+              <option value="20" selected>20 s</option><option value="30">30 s</option>
+            </select>
+          </label>
+        </div>
+        <label class="check"><input id="opt-demo" type="checkbox"> Mode démo (faux viewers pour tester)</label>
+        <p id="setup-chat" class="hint"></p>
+        <p id="setup-error" class="error" hidden></p>
+        <button id="btn-start" type="submit" class="btn primary big">▶ Lancer la partie</button>
+      </form>
+    </section>
+
+    <!-- PARTIE -->
+    <section id="screen-game" class="screen game">
+      <div class="game-top">
+        <span id="g-progress" class="pill"></span>
+        <span id="g-tag" class="pill soft" hidden></span>
+        <span class="spacer"></span>
+        <span class="pill soft"><span class="dot" id="g-dot" data-status="off"></span> <span id="g-players">0</span> 👥</span>
+      </div>
+      <div class="timer"><div id="g-timer-bar"></div><span id="g-timer-txt"></span></div>
+
+      <div id="g-media" class="media"></div>
+      <h2 id="g-question" class="question"></h2>
+      <ol id="g-answers" class="answers"></ol>
+
+      <p id="g-cta" class="cta"></p>
+
+      <div id="g-reveal" class="reveal" hidden></div>
+      <div id="g-board" class="board" hidden></div>
+
+      <div class="host-bar">
+        <button id="btn-pause" class="btn small ghost" title="Pause">⏸</button>
+        <button id="btn-skip" class="btn small ghost" title="Passer">⏭</button>
+        <button id="btn-quit" class="btn small ghost" title="Arrêter">✖</button>
+      </div>
+    </section>
+
+    <!-- FIN -->
+    <section id="screen-end" class="screen">
+      <h2 id="end-title">🏆 Classement final</h2>
+      <div id="end-podium" class="podium"></div>
+      <ol id="end-list" class="end-list"></ol>
+      <div class="row">
+        <button id="btn-replay" class="btn primary">🔁 Rejouer</button>
+        <button class="btn ghost" data-go="home">🏠 Autres jeux</button>
+      </div>
+    </section>
+
+  </div>
+  <audio id="audio" preload="auto" playsinline></audio>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

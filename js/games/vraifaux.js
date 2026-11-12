@@ -1,0 +1,62 @@
+import { sample } from '../util.js';
+
+// [affirmation, vrai ?, explication]
+const FACTS = [
+  ['La Grande Muraille de Chine est visible à l’œil nu depuis la Lune.', false, 'Elle est bien trop étroite pour être vue de si loin.'],
+  ['Botaniquement, la tomate est un fruit.', true, 'Elle contient des graines : c’est un fruit.'],
+  ['Le poisson rouge a une mémoire de 3 secondes.', false, 'Il peut se souvenir de choses pendant des mois.'],
+  ['Sur Vénus, un jour dure plus longtemps qu’une année.', true, 'Vénus tourne très lentement sur elle-même : 243 jours contre 225 pour faire le tour du Soleil.'],
+  ['La tour Eiffel est un peu plus haute en été qu’en hiver.', true, 'Le métal se dilate avec la chaleur : jusqu’à une quinzaine de centimètres.'],
+  ['Les chauves-souris sont aveugles.', false, 'Elles voient, et utilisent en plus l’écholocation.'],
+  ['Le miel peut se conserver pendant des milliers d’années.', true, 'On a retrouvé du miel encore mangeable dans des tombes égyptiennes.'],
+  ['La pieuvre a trois cœurs.', true, 'Deux pour les branchies, un pour le reste du corps.'],
+  ['Napoléon était très petit pour son époque.', false, 'Il mesurait environ 1,69 m, dans la moyenne de l’époque.'],
+  ['L’eau de mer gèle à 0 °C.', false, 'Le sel abaisse son point de congélation vers −2 °C.'],
+  ['Le Soleil est une étoile.', true, 'C’est une étoile de taille moyenne.'],
+  ['L’autruche cache sa tête dans le sable quand elle a peur.', false, 'C’est une légende : elle s’enfuit en courant très vite.'],
+  ['Le diamant est fait de carbone.', true, 'Comme le graphite de nos crayons, mais organisé différemment.'],
+  ['L’Australie est plus large que la Lune.', true, 'Environ 4 000 km d’est en ouest, contre 3 474 km de diamètre pour la Lune.'],
+  ['La girafe a plus de vertèbres dans le cou que l’humain.', false, 'Les deux en ont 7 ! Celles de la girafe sont juste beaucoup plus longues.'],
+  ['Le Sahara est le plus grand désert du monde.', false, 'C’est l’Antarctique ! Le Sahara est le plus grand désert chaud.'],
+  ['Le koala est un ours.', false, 'C’est un marsupial, comme le kangourou.'],
+  ['Le sang est bleu dans les veines.', false, 'Il est toujours rouge, plus foncé quand il manque d’oxygène.'],
+  ['La lumière va plus vite que le son.', true, 'C’est pour ça qu’on voit l’éclair avant d’entendre le tonnerre.'],
+  ['Le dauphin dort avec un œil ouvert.', true, 'Une moitié de son cerveau dort pendant que l’autre reste éveillée.'],
+  ['La foudre ne tombe jamais deux fois au même endroit.', false, 'Elle frappe souvent les mêmes points hauts, comme les grandes tours.'],
+  ['On n’utilise que 10 % de notre cerveau.', false, 'C’est un mythe : on utilise toutes les zones du cerveau.'],
+  ['L’océan Pacifique est le plus grand océan.', true, 'Il couvre environ un tiers de la planète.'],
+  ['Le flamant rose est rose à cause de ce qu’il mange.', true, 'Les crevettes et algues qu’il mange contiennent des pigments roses.'],
+  ['La Joconde est exposée au musée du Louvre.', true, 'Elle est à Paris depuis plus de 200 ans.'],
+  ['Le chocolat est dangereux pour les chiens.', true, 'Il contient de la théobromine, toxique pour eux.'],
+  ['Le corps humain contient environ 60 % d’eau.', true, 'Chez l’adulte, c’est environ 60 %.'],
+  ['Un kilo de plumes est plus léger qu’un kilo de plomb.', false, 'Un kilo reste un kilo !'],
+  ['Les manchots vivent au pôle Nord.', false, 'Ils vivent dans l’hémisphère sud, surtout en Antarctique.'],
+  ['Mercure est la planète la plus chaude du système solaire.', false, 'C’est Vénus, à cause de son atmosphère très épaisse.'],
+  ['La vache a quatre estomacs.', true, 'Plus exactement, un estomac à quatre compartiments.'],
+  ['Le panda géant mange presque uniquement du bambou.', true, 'Le bambou représente environ 99 % de son alimentation.'],
+  ['L’escargot peut dormir pendant plusieurs mois.', true, 'Il peut hiberner longtemps quand il fait trop sec ou trop froid.'],
+  ['Le français est une langue officielle du Canada.', true, 'Avec l’anglais.'],
+  ['Les ongles et les cheveux continuent de pousser après la mort.', false, 'C’est la peau qui se rétracte et donne cette impression.'],
+  ['Un éternuement peut dépasser les 100 km/h.', true, 'Les gouttelettes peuvent sortir très vite.'],
+  ['Le Mont-Saint-Michel est en Bretagne.', false, 'Il est en Normandie, tout près de la frontière bretonne.'],
+  ['Les fraises sont des baies.', false, 'Botaniquement non… mais la banane, si !'],
+];
+
+export default {
+  id: 'vraifaux',
+  name: 'Vrai ou faux',
+  emoji: '✅',
+  description: 'Une affirmation : 1 = vrai, 2 = faux.',
+  answersCount: 2,
+  scored: true,
+  options: [],
+  async build({ count }) {
+    return sample(FACTS, Math.min(count, FACTS.length)).map(([prompt, isTrue, why]) => ({
+      prompt,
+      answers: ['Vrai ✅', 'Faux ❌'],
+      correct: isTrue ? 0 : 1,
+      keywords: [['vrai', 'v', 'true'], ['faux', 'f', 'false']],
+      reveal: { title: isTrue ? 'VRAI ✅' : 'FAUX ❌', text: why },
+    }));
+  },
+};
