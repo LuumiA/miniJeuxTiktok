@@ -1,5 +1,6 @@
 import { EulerChat, DemoChat } from './chat.js';
 import { store, escapeHtml, normalize } from './util.js';
+import { ytPlay, ytPause, ytResume, ytStop, onYouTubeError } from './youtube.js';
 import blindtest from './games/blindtest.js';
 import quiz from './games/quiz.js';
 import drapeaux from './games/drapeaux.js';
@@ -218,6 +219,7 @@ async function runGame(game, questions, settings) {
     const q = questions[G.idx];
     await askQuestion(q);
     if (G.aborted) break;
+    if (q.unplayable) { await wait(2500); continue; }
     await revealQuestion(q);
     if (G.aborted) break;
     if (game.scored && G.scores.size && G.idx < questions.length - 1) await showBoard();
@@ -225,7 +227,7 @@ async function runGame(game, questions, settings) {
 
   G.phase = 'idle';
   demo.stop();
-  audio.pause();
+  stopSound();
   $('#screen-game').classList.remove('revealing', 'boarding');
   showEnd();
 }
@@ -272,14 +274,15 @@ async function askQuestion(q) {
   if (!m) media.innerHTML = '';
   else if (m.type === 'image') media.innerHTML = `<img class="${m.flag ? 'flag' : ''}" src="${escapeHtml(m.src)}" alt="">`;
   else if (m.type === 'emoji') media.innerHTML = `<div class="emoji">${escapeHtml(m.text)}</div>`;
-  else if (m.type === 'audio') media.innerHTML = '<div class="vinyl"></div>';
+  else if (m.type === 'audio' || m.type === 'youtube') media.innerHTML = '<div class="vinyl"></div>';
 
+  stopSound();
   if (m?.type === 'audio') {
     audio.src = m.src;
     audio.currentTime = 0;
     audio.play().catch(() => {});
-  } else {
-    audio.pause();
+  } else if (m?.type === 'youtube') {
+    ytPlay(m.videoId, m.start).catch(() => {});
   }
 
   renderAnswers(q);
@@ -440,13 +443,29 @@ function confetti() {
   }
 }
 
+function stopSound() {
+  audio.pause();
+  ytStop();
+}
+
+// Vidéo YouTube impossible à lire hors de YouTube : on passe à la question suivante.
+onYouTubeError(() => {
+  const q = G.questions[G.idx];
+  if (G.phase !== 'question' || q?.media?.type !== 'youtube') return;
+  q.unplayable = true;
+  $('#g-cta').innerHTML = '⚠️ Cette vidéo ne peut pas être lue ici : on passe à la suivante.';
+  G.skip?.();
+});
+
 /* ---------------- Boutons de l'animatrice ---------------- */
 
 $('#btn-pause').addEventListener('click', () => {
   G.paused = !G.paused;
   $('#btn-pause').textContent = G.paused ? '▶' : '⏸';
   $('#screen-game').classList.toggle('paused', G.paused);
-  if (G.questions[G.idx]?.media?.type === 'audio') G.paused ? audio.pause() : audio.play().catch(() => {});
+  const type = G.questions[G.idx]?.media?.type;
+  if (type === 'audio') G.paused ? audio.pause() : audio.play().catch(() => {});
+  if (type === 'youtube') G.paused ? ytPause() : ytResume();
 });
 $('#btn-skip').addEventListener('click', () => G.skip?.());
 $('#btn-quit').addEventListener('click', () => {

@@ -27,7 +27,7 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
-#app { max-width: 520px; margin: 0 auto; min-height: 100dvh; position: relative; }
+#app { max-width: 520px; margin: 0 auto; min-height: 100dvh; position: relative; z-index: 1; }
 
 .screen { display: none; padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); min-height: 100dvh; }
 .screen.active { display: block; }
@@ -198,3 +198,6 @@ textarea { min-height: 110px; resize: vertical; }
 @keyframes fall { to { transform: translateY(110dvh) rotate(720deg); } }
 
 @media (min-height: 760px) { .answer { min-height: 66px; } .answers { gap: 12px; } .question { margin: 8px 0; } }
+
+/* Lecteur YouTube caché derrière le site (seul le son sert) */
+#yt-wrap { position: fixed; left: 0; top: 0; width: 200px; height: 200px; z-index: -1; opacity: 0; pointer-events: none; overflow: hidden; }

@@ -4,7 +4,7 @@ Mini-jeux pour les lives TikTok. On ouvre le site sur son téléphone, on partag
 
 | Jeu | Principe |
 |---|---|
-| 🎵 Blindtest | Extrait de 30 s (Deezer) : top du moment, années 80/90/2000/2010, rap FR, variété, Disney, ou ta propre playlist Deezer |
+| 🎵 Blindtest | Listes toutes prêtes (top du moment, années 80/90/2000/2010, rap FR, variété, Disney), ou **ta playlist Deezer, Spotify ou YouTube** (il suffit de coller le lien) |
 | 🧠 Quiz culture G | 7 catégories : sport, ciné, histoire, géo, sciences, musique, divers |
 | 🚩 Devine le pays | Drapeau → pays, ou pays → capitale. Facile ou difficile |
 | 🎬 Film en emojis | Les emojis racontent un film |
@@ -15,13 +15,22 @@ Règles : un seul vote par personne et par question (le premier compte). Une bon
 
 ## Le site, techniquement
 
-Le site est fait en HTML, CSS et JavaScript, sans étape de compilation et sans serveur. Le chat arrive directement dans le navigateur grâce à [Euler Stream](https://www.eulerstream.com) (WebSocket).
+Le site est fait en HTML, CSS et JavaScript, sans étape de compilation. Le chat arrive directement dans le navigateur grâce à [Euler Stream](https://www.eulerstream.com) (WebSocket).
+
+D'où vient la musique du blindtest :
+- **Deezer** : l'API publique donne des extraits de 30 s.
+- **Spotify** : la page « embed » publique de la playlist donne des extraits de 30 s.
+- **YouTube** : la vidéo est lue par un lecteur caché, à partir de 40 s pour éviter les intros.
+
+Il ne faut ni compte développeur, ni clé. Les playlists Spotify et YouTube sont lues par une petite fonction serveur Vercel (`api/playlist.js`), parce que le navigateur n'a pas le droit de lire ces pages lui-même.
 
 ```
 index.html           page unique (accueil, réglages, partie, classement)
 css/style.css
 js/main.js           déroulé d'une partie, votes, points, classement
 js/chat.js           connexion Euler Stream + mode démo (faux viewers)
+js/youtube.js        lecteur YouTube caché (blindtest)
+api/playlist.js      fonction Vercel : lit les playlists Spotify / YouTube
 js/util.js
 js/games/*.js        un fichier par jeu (questions + règles)
 ```
@@ -32,9 +41,9 @@ Chaque question a la forme `{ prompt, answers: [...], correct: index ou null, me
 
 ### Tester sur l'ordinateur
 ```bash
-npx serve .
+npx vercel dev
 ```
-Ouvre ensuite http://localhost:3000. Coche **Mode démo** dans les réglages d'un jeu : de faux viewers votent.
+Ouvre ensuite http://localhost:3000. Avec `npx serve .`, tout marche sauf les playlists Spotify et YouTube, qui ont besoin de la fonction serveur. Coche **Mode démo** dans les réglages d'un jeu : de faux viewers votent.
 
 ## Mise en ligne (gratuit)
 
@@ -59,6 +68,16 @@ Ouvre ensuite http://localhost:3000. Coche **Mode démo** dans les réglages d'u
 Pendant la partie, les petits boutons en bas permettent de mettre en pause, de passer et d'arrêter.
 
 ⚠️ La clé API est enregistrée uniquement dans le navigateur du téléphone. Ne la mets jamais dans le code.
+
+### Blindtest avec ta playlist
+Dans les réglages du Blindtest, choisis **Ma playlist**, puis colle le lien de partage :
+- Deezer : `https://www.deezer.com/fr/playlist/…` (un album marche aussi)
+- Spotify : `https://open.spotify.com/playlist/…` (un album marche aussi)
+- YouTube : `https://www.youtube.com/playlist?list=…`
+
+La playlist doit être **publique**. Si l'appli te donne un lien raccourci (`link.deezer.com`, `spotify.link`), ouvre-le dans le navigateur et copie l'adresse complète.
+
+Sur YouTube, certaines vidéos refusent d'être lues ailleurs que sur YouTube. Le jeu les saute tout seul. Les titres YouTube sont nettoyés automatiquement (« Clip officiel », « ft. … » sont retirés), mais une playlist de type « YouTube Music » ou « - Topic » donne les titres les plus propres.
 
 ### Si le chat ne marche pas
 - « Ce compte n'est pas en live » : la connexion ne marche que pendant un live.
